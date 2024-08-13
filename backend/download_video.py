@@ -1,23 +1,19 @@
 import sys
-from pytubefix import YouTube
 import os
+import yt_dlp
 
 def download_video(url, output_dir):
     try:
-        yt = YouTube(url)
-        stream = yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first()
+        ydl_opts = {
+            'format': 'best[ext=mp4]/best',
+            'outtmpl': os.path.join(output_dir, '%(title)s.%(ext)s'),
+            'restrictfilenames': True,
+        }
         
-        if not stream:
-            raise Exception("No suitable stream found")
-        
-        # Generate a filename based on the video title
-        filename = f"{yt.title}.mp4"
-        # Remove any characters that are invalid for filenames
-        filename = "".join(c for c in filename if c.isalnum() or c in (' ', '.', '_')).rstrip()
-        
-        output_path = os.path.join(output_dir, filename)
-        stream.download(output_path=output_dir, filename=filename)
-        print(f"Video downloaded to: {output_path}")
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(url, download=True)
+            filename = ydl.prepare_filename(info)
+            print(f"Video downloaded to: {filename}")
     except Exception as e:
         print(f"Error downloading video: {str(e)}", file=sys.stderr)
         sys.exit(1)
