@@ -24,10 +24,7 @@
         "mongoose": "^8.4.1",
         "openai": "^4.33.1",
         "stripe": "^16.5.0",
-        "youtube-dl-exec": "^3.0.7",
         "youtube-transcript": "^1.1.0",
-        "youtubei.js": "^9.2.0",
-        "yt-dlp-wrap": "^2.3.12",
-        "ytdl-core": "^4.11.5"
+        "youtubei.js": "^9.2.0"
     }
 }
