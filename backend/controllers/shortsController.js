@@ -10,7 +10,7 @@ import path from 'path';
 ffmpeg.setFfmpegPath(ffmpegPath);
 
 const baseUrl = process.env.NODE_ENV === 'production' 
-  ? 'https://your-render-domain.onrender.com'
+  ? 'https://ytob.onrender.com'
   : 'http://localhost:5000';
 
 export const generateShorts = async (req, res) => {
