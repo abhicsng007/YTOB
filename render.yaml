@@ -2,13 +2,11 @@ services:
   - type: web
     name: ytob
     plan: free
-    env: node
+    env: python
     buildCommand: |
       # Install Node.js dependencies
       cd backend
-      npm install
-      # Install Python dependencies
-      pip install -r requirements.txt
+      pip install -r requirements.txt && npm install
     startCommand: |
       # Start your Node.js application (if applicable)
       cd backend
