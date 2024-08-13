@@ -1,11 +1,13 @@
 import { spawn } from 'child_process';
 import { OpenAI } from '@langchain/openai';
 import { path as ffmpegPath } from '@ffmpeg-installer/ffmpeg';
+import { fileURLToPath } from 'url';
 import ffmpeg from 'fluent-ffmpeg';
 import fs from 'fs';
 import path from 'path';
 
-
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 ffmpeg.setFfmpegPath(ffmpegPath);
 
@@ -20,7 +22,7 @@ export const generateShorts = async (req, res) => {
   try {
     // Download video using Python script
      
-    const videoPath = await downloadVideoWithPython(url,'./shorts');
+    const videoPath = await downloadVideoWithPython(url,path.join(__dirname, 'shorts'));
 
     // Fetch transcript
     const transcript = await fetchTranscript(videoId);
