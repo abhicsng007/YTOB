@@ -1,13 +1,13 @@
 services:
   - type: web
     name: ytob
-    env: node
+    runtime: node
     plan: free
     rootDir: backend  # Specify the directory containing your backend code
     buildCommand: npm install && pip install -r requirements.txt
     startCommand: npm start
     envVars:
       - key: NODE_VERSION
-        value: 14.17.0
+        value: 20.10.0
       - key: PYTHON_VERSION
-        value: 3.9.0
+        value: 3.11.4
