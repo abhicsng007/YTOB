@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: your-backend-name
+    name: ytob
     env: node
     plan: free
     rootDir: backend  # Specify the directory containing your backend code
