@@ -1,6 +1,7 @@
 services:
   - type: web
     name: ytob
+    plan: free
     env: node
     buildCommand: |
       # Install Node.js dependencies
