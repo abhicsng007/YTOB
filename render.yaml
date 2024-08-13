@@ -1,14 +1,13 @@
 services:
   - type: web
-    name: ytob
+    name: your-backend-name
+    env: node
     plan: free
-    env: python
-    buildCommand: |
-      # Install Node.js dependencies
-      cd backend
-      pip install -r requirements.txt && npm install
-    startCommand: |
-      # Start your Node.js application (if applicable)
-      cd backend
-      npm start
-      
+    rootDir: backend  # Specify the directory containing your backend code
+    buildCommand: npm install && pip install -r requirements.txt
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 14.17.0
+      - key: PYTHON_VERSION
+        value: 3.9.0
