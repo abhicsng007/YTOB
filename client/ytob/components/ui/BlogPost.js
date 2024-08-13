@@ -133,11 +133,18 @@ const BlogPost = ({ text, defVideoUrl }) => {
 
   const handleImageClick = () => {
     if (isClick) {
-      const editor = quillRef.current.getEditor();
-      const selection = editor.getSelection();
-      setCursorPosition(selection ? selection.index : null);
-      setShowComponent(!showComponent);
+      // Only try to access the editor if we're in edit mode
+      if (quillRef.current) {
+        const editor = quillRef.current.getEditor();
+        const selection = editor.getSelection();
+        setCursorPosition(selection ? selection.index : null);
+      } else {
+        // If the editor isn't available, just set the cursor position to null
+        setCursorPosition(null);
+      }
     }
+    // Always toggle the Capture component
+    setShowComponent(!showComponent);
   };
 
   const insertImageAtCursor = (imagePath) => {
