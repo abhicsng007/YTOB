@@ -21,6 +21,16 @@ export const generateBlog = async (req, res) => {
   pythonProcess.on('close', (code) => {
     console.log(`Python process exited with code ${code}`);
 
+    if (code !== 0) {
+      // Python script failed
+      return res.status(500).json({ error: 'Failed to fetch transcript' });
+    }
+
+    if (!response.trim()) {
+      // No response from Python script
+      return res.status(500).json({ error: 'No transcript data received' });
+    }
+
     const instruction = `Convert below transcript into 700 words human blog with headings and subheadings. keep varying tone through the text .write fifth grade english use simple words.use simple sentences.make common grammatical mistakes like humans do . do not repeat same words.\n${response} `;
 
     const model = new OpenAI({
@@ -36,8 +46,7 @@ export const generateBlog = async (req, res) => {
         const titleMatch = generatedBlogPost.match(/^# (.+)$/m);
         const title = titleMatch ? titleMatch[1] : 'Untitled';
 
-        
-    // Extract the first 100 words as excerpt, excluding the title
+        // Extract the first 100 words as excerpt, excluding the title
         const excerpt = createExcerpt(generatedBlogPost);
 
         // Save the blog post with the extracted title and excerpt
