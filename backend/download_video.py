@@ -8,8 +8,6 @@ def download_video(url, output_dir):
             'format': 'best[ext=mp4]/best',
             'outtmpl': os.path.join(output_dir, '%(title)s.%(ext)s'),
             'restrictfilenames': True,
-            'username': 'abhicsngstore@gmail.com',
-            'password': 'Abhi@70119582',
             'no_warnings': True,
             'ignoreerrors': True,
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
