@@ -8,7 +8,8 @@ def download_video(url, output_dir):
             'format': 'best[ext=mp4]/best',
             'outtmpl': os.path.join(output_dir, '%(title)s.%(ext)s'),
             'restrictfilenames': True,
-            'proxy':'http://localhost:5000'
+            'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1',
+            
         }
         
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
