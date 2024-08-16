@@ -26,7 +26,6 @@ def download_video(url, output_dir, proxy=None):
     try:
         ua = UserAgent()
         ydl_opts = {
-            'cookiesfrombrowser': ('chrome'),
             'format': 'best[ext=mp4]/best',
             'outtmpl': os.path.join(output_dir, '%(title)s.%(ext)s'),
             'restrictfilenames': True,
