@@ -13,4 +13,4 @@ def transcribe(data):
     return transcript
 
 
-print(transcribe(YouTubeTranscriptApi.get_transcript(sys.argv[1])))
+print(transcribe(YouTubeTranscriptApi.get_transcript(sys.argv[1]) , proxies = {"http": "http://proxy.goproxy.com:30000", "https": "http://proxy.goproxy.com:30000"}))
