@@ -6,26 +6,25 @@ import random
 from fake_useragent import UserAgent
 from urllib.parse import urlparse
 
-def get_random_proxy():
+def get_proxies():
     try:
         with open('proxies.txt', 'r') as f:
             proxies = f.read().splitlines()
-        return random.choice(proxies) if proxies else None
+        return proxies if proxies else []
     except FileNotFoundError:
         print("proxies.txt file not found. No proxy will be used.")
-        return None
+        return []
     except Exception as e:
         print(f"Error reading proxies: {str(e)}")
-        return None
+        return []
 
 def get_referrer(url):
     parsed_url = urlparse(url)
     return f"{parsed_url.scheme}://{parsed_url.netloc}"
 
-def download_video(url, output_dir):
+def download_video(url, output_dir, proxy=None):
     try:
         ua = UserAgent()
-        proxy = get_random_proxy()
         ydl_opts = {
             'format': 'best[ext=mp4]/best',
             'outtmpl': os.path.join(output_dir, '%(title)s.%(ext)s'),
@@ -44,9 +43,10 @@ def download_video(url, output_dir):
             info = ydl.extract_info(url, download=True)
             filename = ydl.prepare_filename(info)
             print(f"Video downloaded to: {filename}")
+            return True
     except Exception as e:
-        print(f"Error downloading video: {str(e)}", file=sys.stderr)
-        sys.exit(1)
+        print(f"Error downloading video with proxy {proxy}: {str(e)}", file=sys.stderr)
+        return False
 
 def main():
     if len(sys.argv) != 3:
@@ -56,21 +56,22 @@ def main():
     url = sys.argv[1]
     output_dir = sys.argv[2]
     
-    # Implement request throttling
-    max_retries = 3
-    retry_delay = 60  # seconds
+    proxies = get_proxies()
+    if not proxies:
+        print("No proxies available, proceeding without proxy.")
+        download_video(url, output_dir)
+        sys.exit(0)
     
-    for attempt in range(max_retries):
-        try:
-            download_video(url, output_dir)
-            break
-        except Exception as e:
-            if attempt < max_retries - 1:
-                print(f"Attempt {attempt + 1} failed. Retrying in {retry_delay} seconds...")
-                time.sleep(retry_delay)
-            else:
-                print(f"Max retries reached. Failed to download video.")
-                sys.exit(1)
+    for proxy in proxies:
+        print(f"Trying proxy: {proxy}")
+        if download_video(url, output_dir, proxy):
+            print("Video downloaded successfully.")
+            sys.exit(0)
+        else:
+            print("Failed with this proxy, trying next...")
+    
+    print("All proxies failed. Unable to download the video.")
+    sys.exit(1)
 
 if __name__ == "__main__":
     main()
