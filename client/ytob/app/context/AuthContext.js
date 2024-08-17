@@ -82,15 +82,22 @@ export function AuthProvider({ children }) {
     }
   }, [router]);
 
-  const logout = useCallback(() => {
-    localStorage.removeItem('accessToken');
-    setIsSignedIn(false);
-    setUser(null);
-    localStorage.removeItem('userinfo');
-    setError(null);
-    router.push('/sign-in');
-    // You might want to add a call to the backend to invalidate the refresh token
+  const logout = useCallback(async () => {
+    try {
+      await axiosInstance.post('/auth/logout'); 
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('userinfo');
+      setIsSignedIn(false);
+      setUser(null);
+      setError(null);
+      router.push('/sign-in');
+      console.log('logged out sucessfully');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+    
   }, [router]);
+  
 
   const authContextValue = {
     isSignedIn,
