@@ -87,6 +87,8 @@ export function AuthProvider({ children }) {
       await axiosInstance.post('/auth/logout'); 
       localStorage.removeItem('accessToken');
       localStorage.removeItem('userinfo');
+      sessionStorage.clear();
+      localStorage.clear();
       setIsSignedIn(false);
       setUser(null);
       setError(null);
