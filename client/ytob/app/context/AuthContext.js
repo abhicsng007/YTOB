@@ -16,12 +16,10 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
   const router = useRouter();
-
+  
   const validateToken = useCallback(async () => {
     const token = localStorage.getItem('accessToken');
-    console.log('Validating token:', token ? token.substring(0, 10) + '...' : 'No token');
     if (!token) {
-      console.log('No token found in localStorage');
       setIsSignedIn(false);
       setUser(null);
       localStorage.removeItem('userinfo');
@@ -30,23 +28,26 @@ export function AuthProvider({ children }) {
   
     try {
       const response = await axiosInstance.post('/auth/validate');
-      console.log('Validation response:', response.data);
       if (response.status === 200 && response.data.valid) {
         setIsSignedIn(true);
         setUser(response.data.user);
         localStorage.setItem('userinfo', JSON.stringify(response.data.user));
-        console.log('User signed in:', response.data.user);
       } else {
         throw new Error('Invalid token');
       }
     } catch (error) {
-      console.error('Token validation failed:', error);
       setIsSignedIn(false);
       setUser(null);
       localStorage.removeItem('userinfo');
       localStorage.removeItem('accessToken');
     }
   }, []);
+
+  useEffect(() => {
+    validateToken();
+  }, [validateToken]);
+
+  
 
   const login = useCallback(async (username, password) => {
     try {
