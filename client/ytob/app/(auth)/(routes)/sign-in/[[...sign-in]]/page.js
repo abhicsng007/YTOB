@@ -9,24 +9,19 @@ import { FaUser, FaLock, FaSignInAlt } from 'react-icons/fa';
 export default function SignInPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const { login } = useAuth();
+  const { login, error, isSignedIn, isValidating } = useAuth();
   const router = useRouter();
 
+  // Redirect if already signed in
   useEffect(() => {
-    // Dispatch loading event when component mounts
-    document.dispatchEvent(new Event('page-loading'));
+    if (isSignedIn && !isValidating) {
+      router.push('/dashboard');
+    }
+  }, [isSignedIn, isValidating, router]);
 
-    // Simulate some asynchronous operation
-    setTimeout(() => {
-      // Dispatch loaded event when operation completes
-      document.dispatchEvent(new Event('page-loaded'));
-    }, 100); // Adjust timing as needed
-
-    // Clean up function
-    return () => {
-      document.dispatchEvent(new Event('page-loaded'));
-    };
-  }, []);
+  if (isValidating) {
+    return <div>Loading...</div>;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
