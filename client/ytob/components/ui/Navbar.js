@@ -13,10 +13,8 @@ export default function Navbar() {
   const buttonRef = useRef(null);
 
   const handleLogout = () => {
-    logout(() => {
-      localStorage.removeItem('aiGeneratedImages');
-      router.push('/');
-    });
+    localStorage.removeItem('aiGeneratedImages');
+    logout();
   };
 
   const toggleMenu = () => {
