@@ -17,7 +17,7 @@ function LandingPage() {
   if(isSignedIn){
     router.push('/dashboard');
   }
- },[]);
+ },[isSignedIn]);
 
   return (
     <div >
