@@ -52,6 +52,22 @@ export const login = async (req, res) => {
     }
 };
 
+export const logout = (req, res) => {
+    try {
+      // Clear the refresh token cookie
+      res.clearCookie('refreshToken', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'Strict'
+      });
+  
+      res.status(200).json({ message: 'Logged out successfully' });
+    } catch (error) {
+      console.error("Error logging out:", error);
+      res.status(500).json({ error: 'Failed to logout' });
+    }
+  };
+
 export const refreshAccessToken = (req, res) => {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) return res.sendStatus(401);
