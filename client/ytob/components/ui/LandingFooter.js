@@ -1,5 +1,6 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import { FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram } from 'react-icons/fa';
 
 export const ListItems = () => {
   return (
@@ -185,18 +186,28 @@ function LandingFooter() {
       <div>
         <h3 className="text-xl font-bold text-white mb-4">Follow Us</h3>
         <div className="flex space-x-4">
-          <a href="#" className="text-gray-400 hover:text-white">
-            <i className="fab fa-facebook-f"></i>
-          </a>
-          <a href="#" className="text-gray-400 hover:text-white">
-            <i className="fab fa-twitter"></i>
-          </a>
-          <a href="#" className="text-gray-400 hover:text-white">
-            <i className="fab fa-linkedin-in"></i>
-          </a>
-          <a href="#" className="text-gray-400 hover:text-white">
-            <i className="fab fa-instagram"></i>
-          </a>
+          <ul>
+            <li className="mb-2">
+              <a href="#" className="text-gray-400 hover:text-white">
+              <FaFacebookF size={24} />
+              </a>
+            </li>
+            <li className="mb-2">
+              <a href="#" className="text-gray-400 hover:text-white">
+              <FaTwitter size={24} />
+              </a>
+            </li>
+            <li className="mb-2">
+              <a href="#" className="text-gray-400 hover:text-white">
+              <FaLinkedinIn size={24} />
+              </a>
+            </li>
+            <li className="mb-2">
+              <a href="#" className="text-gray-400 hover:text-white">
+              <FaInstagram size={24} />
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
