@@ -1,6 +1,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram } from 'react-icons/fa';
+import Link from 'next/link';
 
 export const ListItems = () => {
   return (
@@ -165,10 +166,10 @@ function LandingFooter() {
       <div>
         <h3 className="text-xl font-bold text-white mb-4">Quick Links</h3>
         <ul>
-          <li className="mb-2"><a href="#home" className="text-gray-400 hover:text-white">Home</a></li>
-          <li className="mb-2"><a href="#about" className="text-gray-400 hover:text-white">About Us</a></li>
-          <li className="mb-2"><a href="#services" className="text-gray-400 hover:text-white">Services</a></li>
-          <li className="mb-2"><a href="#contact" className="text-gray-400 hover:text-white">Contact</a></li>
+          <li className="mb-2"><Link href="/" className="text-gray-400 hover:text-white">Home</Link></li>
+          <li className="mb-2"><Link href="/about" className="text-gray-400 hover:text-white">About Us</Link></li>
+          <li className="mb-2"><Link href="/services" className="text-gray-400 hover:text-white">Services</Link></li>
+          <li className="mb-2"><Link href="/contact" className="text-gray-400 hover:text-white">Contact</Link></li>
         </ul>
       </div>
 
@@ -176,9 +177,9 @@ function LandingFooter() {
       <div>
         <h3 className="text-xl font-bold text-white mb-4">Resources</h3>
         <ul>
-          <li className="mb-2"><a href="#faq" className="text-gray-400 hover:text-white">FAQ</a></li>
-          <li className="mb-2"><a href="#blog" className="text-gray-400 hover:text-white">Blog</a></li>
-          <li className="mb-2"><a href="#support" className="text-gray-400 hover:text-white">Support</a></li>
+          <li className="mb-2"><Link href="/faq" className="text-gray-400 hover:text-white">FAQ</Link></li>
+          <li className="mb-2"><Link href="/blog" className="text-gray-400 hover:text-white">Blog</Link></li>
+          <li className="mb-2"><Link href="/support" className="text-gray-400 hover:text-white">Support</Link></li>
         </ul>
       </div>
 
