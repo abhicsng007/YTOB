@@ -116,12 +116,12 @@ function LandingFooter() {
 
 
       <section id="pricing" className="py-12 bg-gray-800 w-full">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ">
           <h2 className="text-3xl font-bold text-white mb-4">Pricing</h2>
           <p className="text-gray-400 mb-8">Choose a plan that suits your needs.</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Pricing Card 1 */}
-            <div className="bg-gray-700 rounded-lg p-6 text-center">
+            <div className="bg-gray-700 rounded-lg p-6 text-center transition-transform duration-300 hover:scale-105">
               <h3 className="text-lg font-semibold text-white mb-2 ">Neural</h3>
               <p className="text-2xl font-bold text-white mb-2">$9.99 <em className='text-xs text-gray-300'>(100 credits)</em></p>
               <p className="text-sm text-gray-400 mb-4">per month</p>
@@ -130,7 +130,7 @@ function LandingFooter() {
             </div>
             
             {/* Pricing Card 2 */}
-            <div className="bg-gray-700 rounded-lg p-6 text-center">
+            <div className="bg-gray-700 rounded-lg p-6 text-center transition-transform duration-300 hover:scale-105">
               <h3 className="text-lg font-semibold text-white mb-2">Synapse</h3>
               <p className="text-sm text-gray-400 mb-4"></p>
               <p className="text-2xl font-bold text-white mb-2">$29.99 <em className='text-xs text-gray-300'>(500 credits)</em></p>
@@ -140,7 +140,7 @@ function LandingFooter() {
             </div>
             
             {/* Pricing Card 3 */}
-            <div className="bg-gray-700 rounded-lg p-6 text-center">
+            <div className="bg-gray-700 rounded-lg p-6 text-center transition-transform duration-300 hover:scale-105">
               <h3 className="text-lg font-semibold text-white mb-2">Quantum</h3>
               <p className="text-2xl font-bold text-white mb-2">$49.99 <em className='text-xs text-gray-300'>(1000 credits)</em></p>
               <p className="text-sm text-gray-400 mb-4">per month</p>
