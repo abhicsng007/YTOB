@@ -158,7 +158,7 @@ function LandingFooter() {
       <div>
         <h2 className="text-3xl font-bold text-white mb-4">YTOB</h2>
         <p className="text-gray-400 mb-4">We are dedicated to providing the best service.</p>
-        <p className="text-gray-400">© {new Date().getFullYear()} Company Name. All rights reserved.</p>
+        <p className="text-gray-400">© {new Date().getFullYear()} YTOB. All rights reserved.</p>
       </div>
 
       {/* Quick Links */}
