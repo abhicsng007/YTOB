@@ -12,13 +12,12 @@ const font = Montserrat({weight:"600",subsets:["latin"]});
 function LandingNavbar() {
   const {isSignedIn} = useAuth();
   return (
-    <div className="p-4 bg-transparent flex items-center justify-between">
+    <div className="p-4 bg-transparent flex items-center justify-between lg:mx-8">
         <Link href="/" className="flex items-center">
-                <div className="relative w-16 h-8 mr-4">
-                    <Image
-                        fill
+                <div className="relative w-10 h-8 mr-4">
+                    <img
                         alt="Logo"
-                        src="./vercel.svg"
+                        src="/logo.jpg"
                     />
                 </div>
                 <h1 className={cn("text-1xl font-bold text-white",font.className)}>YtOB</h1>
