@@ -122,7 +122,7 @@ function Sidebar() {
         <Link href='/'> 
           <div className={cn("flex items-center overflow-hidden", isExpanded ? "w-full justify-end" : "w-0")}>
             <div className="relative w-8 h-8 flex-shrink-0 ">
-              <Image fill alt="Logo" src="./ai_logo.svg" />
+              <Image fill alt="Logo" src="/logo.jpg" />
             </div>
             <h1 className={cn("text-xl font-bold ml-2 whitespace-nowrap transition-all duration-300", montserrat.className, isExpanded ? "opacity-100" : "opacity-0")}>YTOB</h1>
           </div>
