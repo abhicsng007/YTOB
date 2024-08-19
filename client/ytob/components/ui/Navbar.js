@@ -51,7 +51,7 @@ export default function Navbar() {
             onClick={toggleMenu}
           >
             <img
-              src="/path-to-your-icon.png" // Replace with your icon path
+              src="/logo.jpg" // Replace with your icon path
               alt="User Icon"
               className="w-6 h-6 rounded-full"
             />
