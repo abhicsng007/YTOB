@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/app/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Sidebar from './Sidebar';
+import { IoIosLogOut } from 'react-icons/io';
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -56,14 +57,15 @@ export default function Navbar() {
             />
           </button>
           {menuOpen && (
-            <div ref={menuRef} className="absolute right-8 mt-12 w-48 bg-gray-900 border border-gray-700 rounded-md shadow-lg py-2 z-10">
-              <button
-                className="block w-full text-left px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-white"
-                onClick={handleLogout}
-              >
-                Logout
-              </button>
-            </div>
+            <div ref={menuRef} className="absolute right-8 mt-12 w-32 bg-gray-900 border border-gray-700 rounded-md shadow-lg py-2 z-10 ">
+            <button
+              className="w-full text-left px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-white flex items-center justify-between"
+              onClick={handleLogout}
+            >
+              <span className='font-[200]'>Logout</span>
+              <IoIosLogOut /> 
+            </button>
+          </div>
           )}
         </div>
       </div>
