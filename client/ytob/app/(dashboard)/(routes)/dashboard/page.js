@@ -100,10 +100,10 @@ const DashboardPage = () => {
       setIsLoading(true);
       try {
         const blogsResponse = await axiosInstance.get('/blogs/allblogs');
-        setBlogs(blogsResponse.data);
+        setBlogs(blogsResponse.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
         
         const summariesResponse = await axiosInstance.get('/summaries/allsummaries');
-        setSummaries(summariesResponse.data);
+        setSummaries(summariesResponse.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
