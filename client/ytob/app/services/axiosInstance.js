@@ -9,7 +9,7 @@ const axiosInstance = axios.create({
 // Function to refresh the access token
 const refreshToken = async () => {
   try {
-    const response = await axios.post('http://localhost:5000/auth/refresh', {}, { withCredentials: true });
+    const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`, {}, { withCredentials: true });
     console.log('Refresh token response:', response.data);
     const { accessToken } = response.data;
     localStorage.setItem('accessToken', accessToken);
