@@ -44,10 +44,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    if(isSignedIn)
-    {
-      validateToken();
-    }
+    validateToken();
   }, [validateToken]);
 
   
