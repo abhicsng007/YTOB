@@ -62,11 +62,11 @@ export function AuthProvider({ children }) {
         setError(null);
         router.push('/dashboard');
       } else {
-        throw new Error('Login failed: No access token received');
+        throw new Error('Invalid email or password');
       }
     } catch (error) {
       console.error('Login error:', error);
-      setError(error.message || 'An unexpected error occurred during login');
+      setError('Please enter a valid email or password');
     }
   }, [router, validateToken]);
 
