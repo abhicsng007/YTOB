@@ -1,34 +1,43 @@
 import { spawn } from 'child_process';
 import { OpenAI } from '@langchain/openai';
 import { path as ffmpegPath } from '@ffmpeg-installer/ffmpeg';
+import { path as ffprobePath } from '@ffprobe-installer/ffprobe';
 import { fileURLToPath } from 'url';
 import ffmpeg from 'fluent-ffmpeg';
 import fs from 'fs';
 import path from 'path';
+import AWS from 'aws-sdk';
+import { promisify } from 'util';
+import { exec } from 'child_process';
+
+const execAsync = promisify(exec);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 ffmpeg.setFfmpegPath(ffmpegPath);
+ffmpeg.setFfprobePath(ffprobePath);
 
-const baseUrl = process.env.NODE_ENV === 'production' 
-  ? 'https://ytob.onrender.com'
-  : 'http://localhost:5000';
+
+// AWS S3 configuration
+const s3 = new AWS.S3({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION,
+});
+
+// CloudFront distribution domain
+const cloudFrontDomain = process.env.CLOUDFRONT_URL;
 
 export const generateShorts = async (req, res) => {
   const { url } = req.query;
   const videoId = extractVideoId(url);
 
   try {
-    // Download video using Python script
-     
-    const videoPath = await downloadVideoWithPython(url,path.join(__dirname, 'shorts'));
-
-    // Fetch transcript
+    const videoPath = await downloadVideoWithPython(url, path.join(__dirname, '../shorts'));
     const transcript = await fetchTranscript(videoId);
 
-    // Generate segments
-    const instruction = `Segment the following transcript into YouTube shorts. Provide start and end times for each segment, along with a title. Give in JSON format with key title and value start and end time for shorts: ${transcript}`;
+    const instruction = `Segment the following transcript into two 20 seconds YouTube shorts. Provide start and end times for each segment, along with a title. Give in JSON format with key title and value start and end time for shorts: ${transcript}`;
 
     const model = new OpenAI({
       modelName: "gpt-4o-mini",
@@ -39,37 +48,32 @@ export const generateShorts = async (req, res) => {
 
     const generatedBlogPost = await model.invoke(instruction);
     console.log('Raw AI response:', generatedBlogPost);
-    const segments = await parseAIResponse(generatedBlogPost);
+    const segments = parseAIResponse(generatedBlogPost);
 
     if (segments.length === 0) {
-      throw new Error('No valid segments generated.');
+      throw new Error('No valid segments generated. AI response may be in an unexpected format.');
     }
 
-    // Add a short delay before proceeding
-    setTimeout(async () => {
-      // Create shorts
-      console.log('Starting to create shorts...');
-      console.log('Video path:', videoPath);
-      console.log('Segments:', JSON.stringify(segments, null, 2));
+    console.log('Starting to create shorts...');
+    console.log('Video path:', videoPath);
+    console.log('Segments:', JSON.stringify(segments, null, 2));
 
-      const processedVideos = await createShorts(videoPath, segments);
+    const processedVideos = await createShorts(videoPath, segments);
 
-      // Clean up
-      try {
-        console.log(`Attempting to delete video file at: ${videoPath}`);
-        fs.unlinkSync(videoPath);
-        console.log(`Deleted original video: ${videoPath}`);
-      } catch (err) {
-        console.error(`Error deleting original video: ${err}`);
-      }
+    try {
+      console.log(`Attempting to delete video file at: ${videoPath}`);
+      fs.unlinkSync(videoPath);
+      console.log(`Deleted original video: ${videoPath}`);
+    } catch (err) {
+      console.error(`Error deleting original video: ${err}`);
+    }
 
-      console.log('Processed videos:', processedVideos);
-      res.json({ data: processedVideos });
-    }, 100);
+    console.log('Processed videos:', processedVideos);
+    res.json({ data: processedVideos });
 
   } catch (error) {
     console.error('Error in generateShorts:', error);
-    res.status(500).send('Internal Server Error: ' + error.message);
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -144,37 +148,92 @@ const extractVideoId = (url) => {
 
 function parseAIResponse(response) {
   try {
-    const jsonString = response.match(/```json\n([\s\S]*?)\n```/)[1];
-    const segments = JSON.parse(jsonString);
+    let jsonString = response;
+    
+    // Try to extract JSON from markdown code block if present
+    const match = response.match(/```json\n([\s\S]*?)\n```/);
+    if (match) {
+      jsonString = match[1];
+    }
 
-    return segments.map(segment => ({
-      ...segment,
-      start: timeToSeconds(segment.start),
-      end: timeToSeconds(segment.end)
-    }));
+    // Try parsing the JSON
+    let parsedResponse = JSON.parse(jsonString);
+
+    // Check if the response has a 'shorts' property
+    let segments = parsedResponse.shorts || parsedResponse;
+
+    // If segments is not an array, wrap it in an array
+    if (!Array.isArray(segments)) {
+      segments = [segments];
+    }
+
+    // Ensure each segment has the required properties
+    return segments.filter(segment => segment.title && segment.start && segment.end)
+                   .map(segment => ({
+                     title: segment.title,
+                     start: timeToSeconds(segment.start),
+                     end: timeToSeconds(segment.end)
+                   }));
   } catch (error) {
     console.error('Error parsing AI response:', error);
+    console.error('Raw AI response:', response);
     return [];
   }
 }
 
 function timeToSeconds(timeString) {
+  if (typeof timeString === 'number') {
+    return timeString;  // Already in seconds
+  }
   const [minutes, seconds] = timeString.split(':').map(Number);
   return minutes * 60 + seconds;
 }
 
+async function detectCropArea(inputPath, duration) {
+  const command = `ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${inputPath}"`;
+  const { stdout } = await execAsync(command);
+  const videoDuration = parseFloat(stdout.trim());
+  
+  const sampleDuration = Math.min(duration, videoDuration);
+  const cropCommand = `ffmpeg -i "${inputPath}" -t ${sampleDuration} -vf cropdetect -f null -`;
+  
+  const { stderr } = await execAsync(cropCommand);
+  const cropLines = stderr.split('\n').filter(line => line.includes('crop='));
+  const lastCropLine = cropLines[cropLines.length - 1];
+  const match = lastCropLine.match(/crop=(\d+):(\d+):(\d+):(\d+)/);
+  
+  if (match) {
+    const [, width, height, x, y] = match.map(Number);
+    return { width, height, x, y };
+  }
+  
+  throw new Error('Unable to detect crop area');
+}
+
 async function createShorts(videoPath, segments) {
   const processedVideos = [];
+  const cropArea = await detectCropArea(videoPath, 10); // Sample first 10 seconds
 
   for (const segment of segments) {
-    let outputFileName = path.join('./shorts', `short_${segment.title.replace(/\s+/g, '_')}.mp4`);
+    let outputFileName = path.join(__dirname, `../shorts/short_${segment.title.replace(/\s+/g, '_')}.mp4`);
     outputFileName = outputFileName.replace(/\\/g, '/');
+
+    // Calculate vertical crop
+    const targetAspectRatio = 9 / 16; // Vertical aspect ratio for Shorts
+    const cropWidth = Math.min(cropArea.width, Math.floor(cropArea.height * targetAspectRatio));
+    const cropX = cropArea.x + Math.floor((cropArea.width - cropWidth) / 2);
+
     await new Promise((resolve, reject) => {
       ffmpeg()
         .input(videoPath)
         .inputOptions(`-ss ${segment.start}`)
         .outputOptions('-t', segment.end - segment.start)
         .outputOptions('-async 1')
+        .videoFilters([
+          `crop=${cropWidth}:${cropArea.height}:${cropX}:${cropArea.y}`,
+          `scale=${720}:${1280}:force_original_aspect_ratio=increase`,
+          'crop=720:1280'
+        ])
         .videoCodec('libx264')
         .audioCodec('aac')
         .output(outputFileName)
@@ -184,13 +243,36 @@ async function createShorts(videoPath, segments) {
         .on('progress', (progress) => {
           console.log(`Processing: ${progress.percent}% done`);
         })
-        .on('end', () => {
+        .on('end', async () => {
           console.log(`Short created: ${outputFileName}`);
-          processedVideos.push({
-            title: segment.title,
-            fileName: `${baseUrl}/${outputFileName}`,
-          });
-          resolve();
+
+          // Upload to S3
+          try {
+            const s3Key = `shorts/${path.basename(outputFileName)}`;
+            const fileStream = fs.createReadStream(outputFileName);
+
+            const uploadParams = {
+              Bucket: process.env.S3_BUCKET_NAME,
+              Key: s3Key,
+              Body: fileStream,
+              ContentType: 'video/mp4'
+            };
+
+            const result = await s3.upload(uploadParams).promise();
+            fs.unlinkSync(outputFileName); // Delete local file after upload
+
+            // Replace S3 URL with CloudFront URL
+            const cloudFrontUrl = `https://${cloudFrontDomain}/${s3Key}`;
+            processedVideos.push({
+              title: segment.title,
+              fileName: cloudFrontUrl,
+            });
+            console.log(`Uploaded to S3 and available via CloudFront: ${cloudFrontUrl}`);
+            resolve();
+          } catch (err) {
+            console.error('Error uploading to S3:', err);
+            reject(err);
+          }
         })
         .on('error', (err, stdout, stderr) => {
           console.error('Error:', err.message);
