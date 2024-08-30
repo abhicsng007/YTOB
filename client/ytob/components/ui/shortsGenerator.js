@@ -35,10 +35,14 @@ export default function ShortsGenerator() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
     } catch (err) {
+
       console.error('Error details:', err);
       setError(`Failed to generate shorts: ${err.message}`);
+
     } finally {
+
       setLoading(false);
+      
     }
   };
   
