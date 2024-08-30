@@ -20,6 +20,27 @@ body,
   @apply flex justify-center items-center;
 }
 
+.quill-table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 1em;
+}
+
+.quill-table th, .quill-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.quill-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.quill-table th {
+  background-color: #4CAF50;
+  color: white;
+}
+
 
 /* Add more custom styles as needed */
 
