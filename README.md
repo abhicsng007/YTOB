@@ -1,6 +1,3 @@
-Here’s a professional and well-structured README for your **YouTube to Blog (YTob)** project:  
-
----
 
 # 🎥 YTob: YouTube to Blog Generator  
 
